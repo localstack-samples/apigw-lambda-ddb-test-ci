@@ -1,0 +1,55 @@
+name: Sample App CI Tests (using LocalStack)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  AWS_ACCESS_KEY_ID: test
+  AWS_SECRET_ACCESS_KEY: test
+
+# Only one pull-request triggered run should be executed at a time
+# (head_ref is only set for PR events, otherwise fallback to run_id which differs for every run).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    name: Run integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install LocalStack and extension
+        run: |
+          docker pull localstack/localstack-pro &
+          # install latest CLI packages (dev releases)
+          make install
+          source .venv/bin/activate
+          pip install --upgrade --pre localstack localstack-ext
+
+          # TODO remove
+          mkdir ~/.localstack; echo '{"token":"test"}' > ~/.localstack/auth.json
+
+          DEBUG=1 make start
+
+      - name: Run integration tests
+        run: |
+          make test
+
+      - name: Print LocalStack logs
+        if: always()
+        run: |
+          make logs
+          make stop
