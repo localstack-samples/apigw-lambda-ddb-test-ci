@@ -1,2 +1,4 @@
+localstack
+localstack-ext
 pytest
 requests
