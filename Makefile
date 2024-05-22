@@ -33,6 +33,11 @@ deploy:   ## Deploy the application via Terraform
 		@tflocal init
 		@tflocal apply -auto-approve
 
+deploy-real-aws:  ## Deploy the application to real AWS Cloud (requires valid credentials)
+		(cd lambda; zip -r ../lambda.zip .)
+		terraform init
+		TF_VAR_is_local=false terraform apply -auto-approve
+
 invoke:   ## Invoke the Lambda via API Gateway
 		curl http://testapi.execute-api.localhost.localstack.cloud:4566/
 

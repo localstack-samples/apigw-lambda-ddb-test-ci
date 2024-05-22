@@ -32,10 +32,10 @@ resource "aws_dynamodb_table" "test" {
 resource "aws_lambda_function" "func" {
   # instead of deploying the lambda from a zip file,
   # we can also deploy it using local code mounting
-  s3_bucket = "hot-reload"
-  s3_key    = "${path.cwd}/lambda"
+  s3_bucket = var.is_local ? "hot-reload" : null
+  s3_key    = var.is_local ? "${path.cwd}/lambda" : null
 
-#   filename      = "lambda.zip"
+  filename      = var.is_local ? null : "lambda.zip"
 
   function_name = "test_lambda_rds"
   role          = aws_iam_role.iam_for_lambda.arn
@@ -99,12 +99,28 @@ resource "aws_apigatewayv2_route" "this" {
   target             = "integrations/${aws_apigatewayv2_integration.this.id}"
 }
 
+resource "aws_apigatewayv2_stage" "test" {
+  api_id = aws_apigatewayv2_api.test.id
+  name   = "$default"
+}
+
+resource "aws_apigatewayv2_deployment" "test" {
+  api_id      = aws_apigatewayv2_api.test.id
+  description = "Test deployment"
+}
+
 # allow API Gateway to invoke the lambda
 
-resource "aws_lambda_permission" "allow_api_gw_invoke_authorizer" {
+resource "aws_lambda_permission" "allow_api_gw_invoke" {
   statement_id  = "allowInvokeFromAPIGatewayRoute"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.func.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.test.execution_arn}/*/*/*/*"
+}
+
+# variable configuration
+variable "is_local" {
+  type = bool
+  default = true
 }
