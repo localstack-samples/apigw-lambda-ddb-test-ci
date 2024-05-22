@@ -4,16 +4,10 @@ import boto3
 
 # AWS SDK clients
 endpoint_url = os.getenv("AWS_ENDPOINT_URL")
-s3 = boto3.client("s3", endpoint_url=endpoint_url)
-sqs = boto3.client("sqs", endpoint_url=endpoint_url)
 dynamodb = boto3.client("dynamodb", endpoint_url=endpoint_url)
 
 # name of local DynamoDB table
 TABLE_NAME = "UserScores"
-
-# ==============
-# Lambda handler
-# ==============
 
 
 def handler(event, context):
@@ -25,7 +19,9 @@ def handler(event, context):
     # scan the table items
     result = dynamodb.scan(TableName=TABLE_NAME)
 
+    # result - TODO: make change below to insert a test bug 🐞
     result = {"Hello": "World", "Items": result["Items"]}
+
     return {
         "statusCode": 200,
         "body": json.dumps(result)
