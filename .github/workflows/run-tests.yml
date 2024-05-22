@@ -10,6 +10,7 @@ on:
 env:
   AWS_ACCESS_KEY_ID: test
   AWS_SECRET_ACCESS_KEY: test
+  LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
 
 # Only one pull-request triggered run should be executed at a time
 # (head_ref is only set for PR events, otherwise fallback to run_id which differs for every run).
@@ -34,13 +35,11 @@ jobs:
       - name: Install LocalStack and extension
         run: |
           docker pull localstack/localstack-pro &
-          # install latest CLI packages (dev releases)
           make install
-          source .venv/bin/activate
-          pip install --upgrade --pre localstack localstack-ext
+          # pip install --upgrade --pre localstack localstack-ext
 
           # TODO remove
-          mkdir ~/.localstack; echo '{"token":"test"}' > ~/.localstack/auth.json
+          # mkdir ~/.localstack; echo '{"token":"test"}' > ~/.localstack/auth.json
 
           DEBUG=1 make start
 

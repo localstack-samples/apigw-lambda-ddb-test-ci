@@ -19,7 +19,7 @@ install:  ## Install dependencies
 		$(VENV_RUN); pip install -r requirements.txt
 
 start:    ## Start LocalStack in detached mode
-		localstack start -d
+		$(VENV_RUN); DEBUG=1 localstack start -d; localstack wait -t 60 && echo LocalStack is ready to use! || (echo Gave up waiting on LocalStack, exiting. && exit 1)
 
 stop:     ## Stop the Running LocalStack container
 		@echo
