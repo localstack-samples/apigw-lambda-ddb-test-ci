@@ -19,8 +19,8 @@ def handler(event, context):
     # scan the table items
     result = dynamodb.scan(TableName=TABLE_NAME)
 
-    # result - TODO: make change below to insert a test bug 🐞
-    result = {"Hello": "World 🐞", "Items": result["Items"]}
+    # result - TODO: make change below to insert a test bug ... 🐞
+    result = {"Hello": "World", "Items": result["Items"]}
 
     return {
         "statusCode": 200,
