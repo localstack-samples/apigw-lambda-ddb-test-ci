@@ -44,6 +44,10 @@ jobs:
 
           DEBUG=1 make start
 
+      - name: Deploy application to LocalStack
+        run: |
+          make deploy
+
       - name: Run integration tests
         run: |
           make test
