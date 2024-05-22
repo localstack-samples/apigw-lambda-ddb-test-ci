@@ -32,15 +32,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install LocalStack and extension
+      - name: Install and start up LocalStack
         run: |
           docker pull localstack/localstack-pro &
           make install
-          # pip install --upgrade --pre localstack localstack-ext
-
-          # TODO remove
-          # mkdir ~/.localstack; echo '{"token":"test"}' > ~/.localstack/auth.json
-
           DEBUG=1 make start
 
       - name: Deploy application to LocalStack
