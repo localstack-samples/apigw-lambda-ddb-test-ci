@@ -95,7 +95,6 @@ resource "aws_apigatewayv2_route" "this" {
   api_id             = aws_apigatewayv2_api.test.id
   route_key          = "GET /"
   authorization_type = "NONE"
-#   authorizer_id      = var.authorizer_id
   target             = "integrations/${aws_apigatewayv2_integration.this.id}"
 }
 
